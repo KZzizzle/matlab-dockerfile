@@ -3,7 +3,7 @@
 # We use the latest dependency container for MathWorks products. You can find more 
 # info on the variety of different tags available for the dependency container and 
 # the Dockerfiles used to build them at https://github.com/mathworks-ref-arch/container-images/tree/master/matlab-deps
-FROM mathworks/matlab-deps as prebuilder
+FROM mathworks/matlab-deps:r2020b-ubuntu20.04 as prebuilder
 
 LABEL  MAINTAINER=MathWorks
 
@@ -82,11 +82,17 @@ ENV MLM_LICENSE_FILE=$LICENSE_SERVER
 # container. You should fill this file out with the details of the license 
 # server you want to use and uncomment the following line.
 # ADD network.lic /usr/local/MATLAB/licenses/
-   
-USER matlab
-WORKDIR /home/matlab
 
 # Uncomment and maybe change the following line to setup mex in your container
-#RUN /usr/local/MATLAB/bin/mex -v -setup C++
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    build-essential && \
+    rm -rf /var/lib/apt/lists/* &&\
+    /usr/local/MATLAB/bin/mex -v -setup C++
 
-ENTRYPOINT ["/opt/startscript/startmatlab.sh"]
+# USER matlab
+# WORKDIR /home/matlab
+
+
+
+# ENTRYPOINT ["/opt/startscript/startmatlab.sh"]
